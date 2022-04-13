@@ -1,1 +1,1 @@
-# CS-170-Final-Project
+# CS 170 Final Project Design Document
