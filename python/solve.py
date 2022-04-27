@@ -142,6 +142,9 @@ def algo(instance: Instance) -> Solution:
             if not temp == min_penalty:
                 solution = tower
                 '''
+
+    return min_penalty, len(solution), solution
+
     #From solution parse the coordinates of each tower
 
 SOLVERS: Dict[str, Callable[[Instance], Solution]] = {
