@@ -6,6 +6,7 @@ For usage, run `python3 solve.py --help`.
 """
 
 import argparse
+import math
 from pathlib import Path
 from typing import Callable, Dict
 
@@ -92,6 +93,8 @@ def algo(instance: Instance) -> Solution:
         check, visited_cities = checker(visited_cities, tower)
         if check:
            continue 
+        
+        most_recent_tower = tower
         while not check:
             next_towers = least_overlap(tower, ans)
             max_dist = 0
@@ -99,27 +102,46 @@ def algo(instance: Instance) -> Solution:
             if len(next_towers) > 1:
                 for tow in next_towers:
                     temp = max_dist
-                    max_dist = max(max_dist, tow[0].distance_sqr(tower[0])) #should be checking distance from most recent placed tower
+                    max_dist = max(max_dist, tow[0].distance_sqr(most_recent_tower[0]))
                     if not temp == max_dist:
                         next_tower = tow 
             else:
                 next_tower = next_towers.pop()
             ans.add(next_tower)
+            most_recent_tower = next_tower
             check, visited_cities = checker(tower, next_tower)
-            possible_solutions.append(ans)
+        possible_solutions.append(ans)
 
 
     #check penalties
-    def penalty(M):
+    def penalty(M): #M has 
         #to implement
+        def count_overlap(tower):
+            count = 0
+            for i in M:
+                #checking if i is itself
+                dist = i[0].distance_sqr(tower[0])
+                if dist != 0 and dist < R_p:
+                    count += 1
+            return count        
+        return_val = 0
+        for tower in M:
+            w_j = count_overlap(tower)
+            return_val += (170 * math.e ** (0.17 * w_j))
+        return return_val
     min_penalty = float("inf")
     solution = 0
     for ans in possible_solutions:
-        for tower in ans:
+        temp = min_penalty
+        min_penalty = min(min_penalty, penalty(ans))
+        if not temp == min_penalty:
+            solution = ans
+        '''for tower in ans:
             temp = min_penalty
             min_penalty = min(min_penalty, penalty(ans))
             if not temp == min_penalty:
                 solution = tower
+                '''
     #From solution parse the coordinates of each tower
 
 SOLVERS: Dict[str, Callable[[Instance], Solution]] = {
