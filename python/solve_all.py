@@ -15,13 +15,12 @@ from pathlib import Path
 from threading import BoundedSemaphore
 
 from instance import Instance
-from python.solve import algo
 from solution import Solution
 
 # Modify this line to import your own solvers.
 # YOUR CODE HERE
 #from solve import solve_naive
-
+from solve import algo
 
 class Size(enum.Enum):
     SMALL = "small"
@@ -106,6 +105,7 @@ def main(args):
         for size, inf, outf in traverse_files(args.inputs, args.outputs):
             sema.acquire()
             print(f"{str(inf)}: spawning job")
+            print(size)
             pool.apply_async(solve_one, (size, inf, outf),
                              callback=callback,
                              error_callback=make_error_callback(size, inf))

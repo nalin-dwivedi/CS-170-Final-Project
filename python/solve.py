@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from instance import Instance
-from python.point import Point # Added this in imports
+from point import Point # Added this in imports
 from solution import Solution
 from file_wrappers import StdinFileWrapper, StdoutFileWrapper
 
@@ -23,10 +23,16 @@ def solve_naive(instance: Instance) -> Solution:
     )
 
 def algo(instance: Instance) -> Solution:
-    D = instance.D()
-    N = instance.N()
-    R_s = instance.R_s()
-    R_p = instance.R_p()
+    print("in algo")
+    D = instance.grid_side_length
+    N = len(instance.cities)
+    R_s = instance.coverage_radius
+    R_p = instance.penalty_radius
+    print("D", D)
+    print("N", N)
+    print("R_s", R_s)
+    print("R_p", R_p)
+    print("===================")
 
     # create P (potential tower) boolean arrays
     potential_towers = [[([False for _ in range(N)], Point(j, k)) for j in range(D)] for k in range(D)]
@@ -142,8 +148,13 @@ def algo(instance: Instance) -> Solution:
             if not temp == min_penalty:
                 solution = tower
                 '''
-
-    return min_penalty, len(solution), solution
+    #only need to return solution and len(solution)
+    #return len(solution), solution
+    parse_input = []
+    for p in solution:
+        parse_input.append(str(p.x + " " + p.y))
+    solution = Solution.parse(parse_input, instance)
+    return solution
 
     #From solution parse the coordinates of each tower
 

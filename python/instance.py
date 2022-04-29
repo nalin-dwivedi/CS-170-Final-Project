@@ -60,7 +60,6 @@ class Instance:
         grid_side_length = _next_int(lines_iter)
         coverage_radius = _next_int(lines_iter)
         penalty_radius = _next_int(lines_iter)
-
         cities = [Point.parse(line) for line in lines_iter]
         assert num_cities == len(cities)
 
