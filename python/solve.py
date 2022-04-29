@@ -22,7 +22,7 @@ def solve_naive(instance: Instance) -> Solution:
         towers=instance.cities,
     )
 
-def algo(instance: Instance) -> Solution:
+def algo_ver1(instance: Instance) -> Solution:
     print("in algo")
     D = instance.grid_side_length
     N = len(instance.cities)
@@ -112,21 +112,32 @@ def algo(instance: Instance) -> Solution:
             max_dist = 0
             next_tower = 0; # next tower that is furthest from tower
             if len(next_towers) > 1:
+                #temp_count = 0
                 for tow in next_towers:
+                    #print(temp_count)
                     #print(tow)
                     temp = max_dist
-                    temp_dist = Point.distance_sq(tow[1],most_recent_tower[1]) # probably inconsistancey with initial val and afterwards val, where point is in 0 initally but later on is in 1
+                    #print("before dist calc")
+                    #print(most_recent_tower)
+                    temp_dist = Point.distance_sq(tow[1],most_recent_tower[0]) # probably inconsistancey with initial val and afterwards val, where point is in 0 initally but later on is in 1
+                    #print("AFTER")
                     max_dist = max(max_dist, temp_dist)
-                    print("after max")
+                    #print("after max")
                     if not temp == max_dist:
-                        next_tower = tow 
-                    print("in for loop")
+                        next_tower = (tow[1], tow[0])
+                    #print("in for loop")
+                    #temp_count+=1
             else:
                 next_tower = next_towers.pop()
-            print("End of while loop")
+            #print("End of while loop")
             ans.append(next_tower)
+            #print("1")
             most_recent_tower = next_tower
-            check, visited_cities = checker(tower, next_tower)
+            #print(tower)
+            check, visited_cities = checker(visited_cities, next_tower)
+            #print("3")
+            print(sum(visited_cities))
+        print('ends while')
         possible_solutions.append(ans)
 
     print("found possible solutions")
@@ -169,6 +180,14 @@ def algo(instance: Instance) -> Solution:
     return solution
 
     #From solution parse the coordinates of each tower
+
+def algo_ver2(instance: Instance) -> Solution:
+    D = instance.grid_side_length
+    N = len(instance.cities)
+    R_s = instance.coverage_radius
+    R_p = instance.penalty_radius
+
+    
 
 SOLVERS: Dict[str, Callable[[Instance], Solution]] = {
     "naive": solve_naive
