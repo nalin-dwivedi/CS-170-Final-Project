@@ -186,8 +186,83 @@ def algo_ver2(instance: Instance) -> Solution:
     N = len(instance.cities)
     R_s = instance.coverage_radius
     R_p = instance.penalty_radius
-
+    cities = instance.cities
     
+    all_towers = [[([False for _ in range(N)], Point(j, k)) for j in range(D)] for k in range(D)]
+    #need to fill in true/false array
+    for x in range (D):
+        for y in range (D):
+            #x,yth true/false array
+            tower_coordinate = all_towers[x][y][1]
+            for c in range(len(cities)):
+                all_towers[x][y][0][c] = Point.distance_sq(tower_coordinate, cities[c]) <= R_s ** 2
+    
+    '''
+    testing to see if all cities are covered by at least 1 possible tower
+    for i in range(N):
+        sum = 0
+        for x in range (D):
+            for y in range(D):
+                # sum([all_towers])
+                sum += all_towers[x][y][0][i]
+        print(sum > 0)
+    '''
+    
+    #find max cities covered
+    max_covered = 0
+    for x in range(D):
+        for y in range(D):
+            max_covered = max(max_covered, sum(all_towers[x][y][0]))
+
+    #towers where number of cities it covers is equal to the max number of cities covered
+    possible_start_tower = []
+    for x in range(D):
+        for y in range(D):
+            if sum(all_towers[x][y][0]) == max_covered:
+                possible_start_tower.append(all_towers[x][y])
+
+    #updates the check_cover array
+    def update_check_cover(check_cover, added_tower):
+        for i in range(N):
+            check_cover[i] = check_cover[i] or added_tower[0][i]
+        return check_cover
+        
+    #returns true if all cities are covered 
+    def checker(check_cover):
+        return all(check_cover)
+    
+    possible_answer = []
+
+    for start in possible_start_tower:
+        #removing current start tower from pool of possible towers
+        #variable that tells if the i_th cities has been covered
+        check_cover = [False for _ in range(N)]
+        #i_th answer 
+        temp_answer = []
+        temp_answer.append(start)
+        
+        check_cover = update_check_cover(check_cover, start)
+        #greedy
+        most_recent_placed_tower = start
+        while not checker(check_cover):
+            most_xor = 0
+            for x in range(D):
+                for y in range(D):
+                    if all_towers[x][y] not in temp_answer:
+
+
+
+            most_recent_placed_tower = #something
+
+        possible_answer.append(temp_answer)
+
+        
+
+        
+
+        
+
+
 
 SOLVERS: Dict[str, Callable[[Instance], Solution]] = {
     "naive": solve_naive
