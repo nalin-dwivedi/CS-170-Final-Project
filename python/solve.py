@@ -28,11 +28,13 @@ def algo(instance: Instance) -> Solution:
     N = len(instance.cities)
     R_s = instance.coverage_radius
     R_p = instance.penalty_radius
+    '''
     print("D", D)
     print("N", N)
     print("R_s", R_s)
     print("R_p", R_p)
     print("===================")
+    '''
 
     # create P (potential tower) boolean arrays
     potential_towers = [[([False for _ in range(N)], Point(j, k)) for j in range(D)] for k in range(D)]
@@ -48,32 +50,35 @@ def algo(instance: Instance) -> Solution:
     max_cities_covered = 0
     for x in range (D):
         for y in range (D):
-            max_cities_covered = max(max_cities_covered, cities_covered[x][y])
-            
+            max_cities_covered = max(max_cities_covered, cities_covered[x][y][1])
+       
     # holding all Pis with most cities covered
-    potential_start_towers = set()
+    potential_start_towers = []
     for x in range (D):
         for y in range(D):
             if cities_covered[x][y][1] == max_cities_covered:
-                potential_start_towers.add(Point(x, y), cities_covered[x][y][0])
-
+                temp_var = (Point(x, y), cities_covered[x][y][0])
+                potential_start_towers.append(temp_var)
     # are all cities visited?
     def checker(visited_cities, tower):
         for is_visited in range(N):
-            visited_cities[is_visited] = tower[is_visited][1] or visited_cities[is_visited]
-
+            visited_cities[is_visited] = tower[1][is_visited] or visited_cities[is_visited]
         return all(visited_cities), visited_cities
 
     # return a set of Pis that have least overlap with input Pi
     def least_overlap(tower, ans):
-        ret_least_overlaps = set()
+        ret_least_overlaps = []
         min_overlap = float("inf")
+        '''
+        print("tower: ",tower)
+        print("ans: ",ans)
+        '''
         for x in range(D):
             for y in range(D):
                 count = 0
                 exists = True
                 for t in ans:
-                    exists = exists and (x == t[0][0] and y == t[0][1])
+                    exists = exists and (x == t[0].x and y == t[0].y)
                 if not exists:
                 #if not (x == tower[0][0] and y == tower[0][1]):
                     for c in range(N):
@@ -83,18 +88,19 @@ def algo(instance: Instance) -> Solution:
 
         for x in range(D):
             for y in range(D):
-                if not (x == tower[0][0] and y == tower[0][1]) and sum(potential_towers[x][y][0]) == min_overlap:
-                    ret_least_overlaps.add(potential_towers[x][y])
+                if not (x == tower[0].x and y == tower[0].y) and sum(potential_towers[x][y][0]) == min_overlap:
+                    ret_least_overlaps.append(potential_towers[x][y])
         return ret_least_overlaps
 
     # greedy 
+    print("Right before Greedy")
     possible_solutions = []
     for tower in potential_start_towers:
         # visited cities
         visited_cities = [False for _ in range(N)]
         # set of towers in this iteration
-        ans = set()
-        ans.add(tower)
+        ans = []
+        ans.append(tower)
         #noting that some cities are visited with possible start tower
         check, visited_cities = checker(visited_cities, tower)
         if check:
@@ -107,18 +113,23 @@ def algo(instance: Instance) -> Solution:
             next_tower = 0; # next tower that is furthest from tower
             if len(next_towers) > 1:
                 for tow in next_towers:
+                    #print(tow)
                     temp = max_dist
-                    max_dist = max(max_dist, tow[0].distance_sqr(most_recent_tower[0]))
+                    temp_dist = Point.distance_sq(tow[1],most_recent_tower[1]) # probably inconsistancey with initial val and afterwards val, where point is in 0 initally but later on is in 1
+                    max_dist = max(max_dist, temp_dist)
+                    print("after max")
                     if not temp == max_dist:
                         next_tower = tow 
+                    print("in for loop")
             else:
                 next_tower = next_towers.pop()
-            ans.add(next_tower)
+            print("End of while loop")
+            ans.append(next_tower)
             most_recent_tower = next_tower
             check, visited_cities = checker(tower, next_tower)
         possible_solutions.append(ans)
 
-
+    print("found possible solutions")
     #check penalties
     def penalty(M): #M has 
         #to implement
@@ -150,6 +161,7 @@ def algo(instance: Instance) -> Solution:
                 '''
     #only need to return solution and len(solution)
     #return len(solution), solution
+    print("Solution: " + solution)
     parse_input = []
     for p in solution:
         parse_input.append(str(p.x + " " + p.y))
