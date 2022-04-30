@@ -15,7 +15,7 @@ from pathlib import Path
 from threading import BoundedSemaphore
 
 from instance import Instance
-from solve import algo_ver2
+from solve import algo_ver3
 from solution import Solution
 
 # Modify this line to import your own solvers.
@@ -33,18 +33,18 @@ class Size(enum.Enum):
 def solver(size: Size, instance: Instance) -> Solution:
     # Modify this function to use your imported solvers.
     # YOUR CODE HERE
-    '''if size == Size.SMALL:
-        return solve_naive(instance)
-    elif size == Size.MEDIUM:
-        return solve_naive(instance)
-    elif size == Size.LARGE:
-        return solve_naive(instance)'''
-    if size == Size.SMALL:
-        return algo_ver2(instance)
+    # if size == Size.SMALL:
+    #     return solve_naive(instance)
     # elif size == Size.MEDIUM:
-    #     return algo_ver2(instance)
+    #     return solve_naive(instance)
     # elif size == Size.LARGE:
-    #     return algo_ver2(instance)
+    #     return solve_naive(instance)
+    if size == Size.SMALL:
+        return algo_ver3(instance)
+    elif size == Size.MEDIUM:
+        return algo_ver3(instance)
+    elif size == Size.LARGE:
+        return algo_ver3(instance)
 
 
 # You shouldn't need to modify anything below this line.

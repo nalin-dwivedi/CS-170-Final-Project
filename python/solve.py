@@ -183,48 +183,148 @@ def solve_naive(instance: Instance) -> Solution:
 #     #From solution parse the coordinates of each tower
 
 
-def algo_ver2(instance: Instance) -> Solution:
+# def algo_ver2(instance: Instance) -> Solution:
+#     D = instance.grid_side_length
+#     N = len(instance.cities)
+#     R_s = instance.coverage_radius
+#     R_p = instance.penalty_radius
+#     cities = instance.cities
+
+#     all_towers = [[([False for _ in range(N)], Point(j, k))
+#                    for j in range(D)] for k in range(D)]
+
+#     # need to fill in true/false array
+#     for x in range(D):
+#         for y in range(D):
+#             # x,yth true/false array
+#             tower_coordinate = all_towers[x][y][1]
+#             for c in range(len(cities)):
+#                 all_towers[x][y][0][c] = Point.distance_sq(
+#                     tower_coordinate, cities[c]) <= R_s ** 2
+
+#     '''
+#     testing to see if all cities are covered by at least 1 possible tower
+#     for i in range(N):
+#         sum = 0
+#         for x in range (D):
+#             for y in range(D):
+#                 # sum([all_towers])
+#                 sum += all_towers[x][y][0][i]
+#         print(sum > 0)
+#     '''
+
+#     # find max cities covered
+#     max_covered = 0
+#     for x in range(D):
+#         for y in range(D):
+#             max_covered = max(max_covered, sum(all_towers[x][y][0]))
+#     max_covered = int(max_covered / 3) * 2
+#     # towers where number of cities it covers is equal to the max number of cities covered
+#     possible_start_tower = []
+#     for x in range(D):
+#         for y in range(D):
+#             if sum(all_towers[x][y][0]) >= max_covered:
+#                 possible_start_tower.append(all_towers[x][y])
+
+#     # updates the check_cover array
+#     def update_check_cover(check_cover, added_tower):
+#         for i in range(N):
+#             check_cover[i] = check_cover[i] or added_tower[0][i]
+#         return check_cover
+
+#     # returns true if all cities are covered
+#     def checker(check_cover):
+#         return all(check_cover)
+
+#     possible_answer = []
+
+#     for start in possible_start_tower:
+#         # removing current start tower from pool of possible towers
+#         # variable that tells if the i_th cities has been covered
+#         check_cover = [False for _ in range(N)]
+#         # i_th answer
+#         temp_answer = []
+#         temp_answer.append(start)
+
+#         check_cover = update_check_cover(check_cover, start)
+#         # greedy
+#         # print("In Greedy")
+#         most_recent_placed_tower = start
+#         while not checker(check_cover):
+#             # can add distance heuristic later if needed for optimization
+#             # finding first tower with most xor
+#             most_xor = 0
+#             # holds tower tuple
+#             tower_with_most_xor = all_towers[0][0]
+#             for x in range(D):
+#                 for y in range(D):
+#                     if all_towers[x][y] not in temp_answer:
+#                         temp_most_xor = most_xor
+#                         count = 0
+#                         for c in range(N):
+#                             #print("Before count add")
+#                             count += check_cover[c] ^ all_towers[x][y][0][c]
+#                             #print("After count add")
+#                         most_xor = max(most_xor, count)
+#                         # print("most_xor: ",most_xor)
+#                         # print("temp: ",temp_most_xor)
+#                         #print(temp_most_xor > most_xor)
+#                         if temp_most_xor < most_xor:
+#                             #print("before replace most xor")
+#                             tower_with_most_xor = all_towers[x][y]
+#                             #print("after most xor")
+
+#             temp_answer.append(tower_with_most_xor)
+#             check_cover = update_check_cover(check_cover, tower_with_most_xor)
+
+#             #most_recent_placed_tower = tower_with_most_xor
+#         # print(all(check_cover))
+#         possible_answer.append(temp_answer)
+
+#     possible_answer_as_solution_type = []
+#     solution_string_arr = 0
+#     for ans_arr in possible_answer:
+#         arr = []
+#         arr.append(str(len(ans_arr)))
+#         for tower_tuple in ans_arr:
+#             arr.append(str(tower_tuple[1].x) + " " + str(tower_tuple[1].y))
+#         possible_answer_as_solution_type.append(Solution.parse(arr, instance))
+
+#     min_penalty = float('inf')
+#     absolute_solution = 0
+#     for sol in possible_answer_as_solution_type:
+#         temp_min_penalty = min_penalty
+#         min_penalty = min(min_penalty, sol.penalty())
+#         if min_penalty < temp_min_penalty:
+#             absolute_solution = sol
+#     return absolute_solution
+
+# potential towers are at every city location instead of all D^2 points
+def algo_ver3(instance: Instance) -> Solution:
     D = instance.grid_side_length
     N = len(instance.cities)
     R_s = instance.coverage_radius
     R_p = instance.penalty_radius
     cities = instance.cities
 
-    all_towers = [[([False for _ in range(N)], Point(j, k))
-                   for j in range(D)] for k in range(D)]
+    all_towers = [([False for _ in range(N)], Point(point.x, point.y))
+                  for point in instance.cities]
 
-    # need to fill in true/false array
-    for x in range(D):
-        for y in range(D):
-            # x,yth true/false array
-            tower_coordinate = all_towers[x][y][1]
-            for c in range(len(cities)):
-                all_towers[x][y][0][c] = Point.distance_sq(
-                    tower_coordinate, cities[c]) <= R_s ** 2
-
-    '''
-    testing to see if all cities are covered by at least 1 possible tower
-    for i in range(N):
-        sum = 0
-        for x in range (D):
-            for y in range(D):
-                # sum([all_towers])
-                sum += all_towers[x][y][0][i]
-        print(sum > 0)
-    '''
+    for tower in all_towers:
+        for c in range(N):
+            tower[0][c] = Point.distance_sq(
+                tower[1], instance.cities[c]) <= R_s ** 2
 
     # find max cities covered
     max_covered = 0
-    for x in range(D):
-        for y in range(D):
-            max_covered = max(max_covered, sum(all_towers[x][y][0]))
-    max_covered = int(max_covered / 3) * 2
+    for tower in all_towers:
+        max_covered = max(max_covered, sum(tower[0]))
+
     # towers where number of cities it covers is equal to the max number of cities covered
     possible_start_tower = []
-    for x in range(D):
-        for y in range(D):
-            if sum(all_towers[x][y][0]) >= max_covered:
-                possible_start_tower.append(all_towers[x][y])
+    for tower in all_towers:
+        if sum(tower[0]) == max_covered:
+            possible_start_tower.append(tower)
 
     # updates the check_cover array
     def update_check_cover(check_cover, added_tower):
@@ -255,24 +355,23 @@ def algo_ver2(instance: Instance) -> Solution:
             # finding first tower with most xor
             most_xor = 0
             # holds tower tuple
-            tower_with_most_xor = all_towers[0][0]
-            for x in range(D):
-                for y in range(D):
-                    if all_towers[x][y] not in temp_answer:
-                        temp_most_xor = most_xor
-                        count = 0
-                        for c in range(N):
-                            #print("Before count add")
-                            count += check_cover[c] ^ all_towers[x][y][0][c]
-                            #print("After count add")
-                        most_xor = max(most_xor, count)
-                        # print("most_xor: ",most_xor)
-                        # print("temp: ",temp_most_xor)
-                        #print(temp_most_xor > most_xor)
-                        if temp_most_xor < most_xor:
-                            #print("before replace most xor")
-                            tower_with_most_xor = all_towers[x][y]
-                            #print("after most xor")
+            tower_with_most_xor = all_towers[0]
+            for tower in all_towers:
+                if tower not in temp_answer:
+                    temp_most_xor = most_xor
+                    count = 0
+                    for c in range(N):
+                        #print("Before count add")
+                        count += check_cover[c] ^ tower[0][c]
+                        #print("After count add")
+                    most_xor = max(most_xor, count)
+                    # print("most_xor: ",most_xor)
+                    # print("temp: ",temp_most_xor)
+                    #print(temp_most_xor > most_xor)
+                    if temp_most_xor < most_xor:
+                        #print("before replace most xor")
+                        tower_with_most_xor = tower
+                        #print("after most xor")
 
             temp_answer.append(tower_with_most_xor)
             check_cover = update_check_cover(check_cover, tower_with_most_xor)
