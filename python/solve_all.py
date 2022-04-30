@@ -19,7 +19,7 @@ from solution import Solution
 
 # Modify this line to import your own solvers.
 # YOUR CODE HERE
-from solve import solve_naive
+from solve import algo_ver3
 
 
 class Size(enum.Enum):
@@ -32,11 +32,11 @@ def solver(size: Size, instance: Instance) -> Solution:
     # Modify this function to use your imported solvers.
     # YOUR CODE HERE
     if size == Size.SMALL:
-        return solve_naive(instance)
+        return algo_ver3(instance)
     elif size == Size.MEDIUM:
-        return solve_naive(instance)
+        return algo_ver3(instance)
     elif size == Size.LARGE:
-        return solve_naive(instance)
+        return algo_ver3(instance)
 
 
 # You shouldn't need to modify anything below this line.
@@ -56,17 +56,17 @@ def traverse_files(inroot: str, outroot):
             yield (size, Path(inroot) / size / inf, Path(outroot) / size / outf)
 
 
-def solve_one(size, inf, outf):
-    with open(inf) as f:
-        instance = Instance.parse(f.readlines())
-    assert instance.valid()
+# def solve_one(size, inf, outf):
+#     with open(inf) as f:
+#         instance = Instance.parse(f.readlines())
+#     assert instance.valid()
 
-    solution = solver(Size(size), instance)
-    assert solution.valid()
+#     solution = solver(Size(size), instance)
+#     assert solution.valid()
 
-    with outf.open('w') as f:
-        solution.serialize(f)
-    print(f"{str(inf)}: solution found with penalty", solution.penalty())
+#     with outf.open('w') as f:
+#         solution.serialize(f)
+#     print(f"{str(inf)}: solution found with penalty", solution.penalty())
 
 
 def solve_one(args):
@@ -114,13 +114,13 @@ def main(args):
             sema.release()
         return error_callback
 
-    with multiprocessing.Pool(args.parallelism) as pool:
-        for size, inf, outf in traverse_files(args.inputs, args.outputs):
-            sema.acquire()
-            print(f"{str(inf)}: spawning job")
-            pool.apply_async(solve_one, (size, inf, outf),
-                             callback=callback,
-                             error_callback=make_error_callback(size, inf))
+    # with multiprocessing.Pool(args.parallelism) as pool:
+    #     for size, inf, outf in traverse_files(args.inputs, args.outputs):
+    #         sema.acquire()
+    #         print(f"{str(inf)}: spawning job")
+    #         pool.apply_async(solve_one, (size, inf, outf),
+    #                          callback=callback,
+    #                          error_callback=make_error_callback(size, inf))
     with multiprocessing.Pool(args.parallelism) as pool:
         pool.map(solve_one, traverse_files(args.inputs, args.outputs))
 
