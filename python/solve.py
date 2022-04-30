@@ -181,7 +181,17 @@ def algo_ver1(instance: Instance) -> Solution:
     return solution
 
     #From solution parse the coordinates of each tower
+"""""
+Variables:
 
+    all_towers
+        TYPE: D x D array with each cell being tuples
+        --> 0th index = 1-D array of length N with True or False
+        --> 1st index = position of the towers in Position class
+
+    max_covered 
+        TYPE: the max covered cities by a potential tower
+"""
 def algo_ver2(instance: Instance) -> Solution:
     D = instance.grid_side_length
     N = len(instance.cities)
@@ -232,52 +242,51 @@ def algo_ver2(instance: Instance) -> Solution:
     #returns true if all cities are covered 
     def checker(check_cover):
         return all(check_cover)
-    
-    possible_answer = []
 
+    def recursive_greedy(check_cover, temp_answer):
+        if checker(check_cover):
+            return temp_answer
+        # finding max xor value
+        most_xor = 0
+        for x in range(D):
+            for y in range(D):
+                if all_towers[x][y] not in temp_answer:
+                    count = 0
+                    #counting xor val at c_th tower
+                    for c in range(N):
+                        count += check_cover[c] ^ all_towers[x][y][0][c]
+                    most_xor = max(most_xor, count)
+                    
+        #finding all "start" with xor val equal to max xor val
+        possible_subtower = []
+        for x in range(D):
+            for y in range(D):
+                if all_towers[x][y] not in temp_answer:
+                    count = 0
+                    #counting xor val at c_th tower
+                    for c in range(N):
+                        count += check_cover[c] ^ all_towers[x][y][0][c]
+                    if count == most_xor:
+                        possible_subtower.append(all_towers[x][y])
+
+        for poss in possible_subtower:
+            temp_answer.append(poss)
+            check_cover = update_check_cover(check_cover, poss)
+            recursive_greedy(check_cover, temp_answer)
+        
+    #contains lists of tower tuples
+    possible_answer = []
     for start in possible_start_tower:
-        #removing current start tower from pool of possible towers
         #variable that tells if the i_th cities has been covered
         check_cover = [False for _ in range(N)]
+
         #i_th answer 
         temp_answer = []
         temp_answer.append(start)
-        
         check_cover = update_check_cover(check_cover, start)
-        #greedy
-        # print("In Greedy")
-        most_recent_placed_tower = start
-        while not checker(check_cover):
-            # can add distance heuristic later if needed for optimization
-            # finding first tower with most xor
-            most_xor = 0
-            # holds tower tuple
-            tower_with_most_xor = all_towers[0][0]
-            for x in range(D):
-                for y in range(D):
-                    if all_towers[x][y] not in temp_answer:
-                        temp_most_xor = most_xor
-                        count = 0
-                        for c in range(N):
-                            #print("Before count add")
-                            count += check_cover[c] ^ all_towers[x][y][0][c]
-                            #print("After count add")
-                        most_xor = max(most_xor, count)
-                        # print("most_xor: ",most_xor)
-                        # print("temp: ",temp_most_xor)
-                        #print(temp_most_xor > most_xor)
-                        if temp_most_xor < most_xor:
-                            #print("before replace most xor")
-                            tower_with_most_xor = all_towers[x][y]
-                            #print("after most xor")
 
-            
-            temp_answer.append(tower_with_most_xor)
-            check_cover = update_check_cover(check_cover, tower_with_most_xor)
+        possible_answer.append(recursive_greedy(check_cover, temp_answer))
 
-            #most_recent_placed_tower = tower_with_most_xor
-        # print(all(check_cover))
-        possible_answer.append(temp_answer)
     
     possible_answer_as_solution_type = []
     solution_string_arr = 0
