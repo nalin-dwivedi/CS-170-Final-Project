@@ -21,7 +21,7 @@ from solution import Solution
 # Modify this line to import your own solvers.
 # YOUR CODE HERE
 #from solve import solve_naive
-from solve import algo_ver1
+# from solve import algo_ver1
 
 class Size(enum.Enum):
     SMALL = "small"
