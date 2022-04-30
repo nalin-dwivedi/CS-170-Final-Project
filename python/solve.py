@@ -238,12 +238,12 @@ def algo_ver2(instance: Instance) -> Solution:
     for x in range(D):
         for y in range(D):
             max_covered = max(max_covered, sum(all_towers[x][y][0]))
-
+    max_covered = int(max_covered / 3) * 2
     # towers where number of cities it covers is equal to the max number of cities covered
     possible_start_tower = []
     for x in range(D):
         for y in range(D):
-            if sum(all_towers[x][y][0]) == max_covered:
+            if sum(all_towers[x][y][0]) >= max_covered:
                 possible_start_tower.append(all_towers[x][y])
 
     # updates the check_cover array
@@ -258,7 +258,7 @@ def algo_ver2(instance: Instance) -> Solution:
 
     def recursive_greedy(check_cover, temp_answer):
         if checker(check_cover):
-            print("BASE CASE")
+            # print("BASE CASE")
             return temp_answer
         # finding max xor value
         most_xor = 0
