@@ -12,7 +12,7 @@ from re import S
 from typing import Callable, Dict
 
 from instance import Instance
-from point import Point # Added this in imports
+from point import Point  # Added this in imports
 from solution import Solution
 from file_wrappers import StdinFileWrapper, StdoutFileWrapper
 
@@ -45,14 +45,14 @@ def solve_naive(instance: Instance) -> Solution:
 #                 city_dist_from_tower = instance.cities[c].distance_sq(potential_towers[x][y][1])
 #                 if city_dist_from_tower <= R_s ** 2:
 #                     potential_towers[x][y][0][c] = True
-    
+
 #     # pick Pi with the most Ts
 #     cities_covered = [[(potential_towers[x][y][0], sum(potential_towers[x][y][0])) for x in range(D)] for y in range(D)]
 #     max_cities_covered = 0
 #     for x in range (D):
 #         for y in range (D):
 #             max_cities_covered = max(max_cities_covered, cities_covered[x][y][1])
-       
+
 #     # holding all Pis with most cities covered
 #     potential_start_towers = []
 #     for x in range (D):
@@ -93,7 +93,7 @@ def solve_naive(instance: Instance) -> Solution:
 #                     ret_least_overlaps.append(potential_towers[x][y])
 #         return ret_least_overlaps
 
-#     # greedy 
+#     # greedy
 #     print("Right before Greedy")
 #     possible_solutions = []
 #     for tower in potential_start_towers:
@@ -105,8 +105,8 @@ def solve_naive(instance: Instance) -> Solution:
 #         #noting that some cities are visited with possible start tower
 #         check, visited_cities = checker(visited_cities, tower)
 #         if check:
-#            continue 
-        
+#            continue
+
 #         most_recent_tower = tower
 #         while not check:
 #             next_towers = least_overlap(tower, ans)
@@ -143,7 +143,7 @@ def solve_naive(instance: Instance) -> Solution:
 
 #     print("found possible solutions")
 #     #check penalties
-#     def penalty(M): #M has 
+#     def penalty(M): #M has
 #         #to implement
 #         def count_overlap(tower):
 #             count = 0
@@ -152,7 +152,7 @@ def solve_naive(instance: Instance) -> Solution:
 #                 dist = i[0].distance_sqr(tower[0])
 #                 if dist != 0 and dist < R_p:
 #                     count += 1
-#             return count        
+#             return count
 #         return_val = 0
 #         for tower in M:
 #             w_j = count_overlap(tower)
@@ -182,23 +182,26 @@ def solve_naive(instance: Instance) -> Solution:
 
 #     #From solution parse the coordinates of each tower
 
+
 def algo_ver2(instance: Instance) -> Solution:
     D = instance.grid_side_length
     N = len(instance.cities)
     R_s = instance.coverage_radius
     R_p = instance.penalty_radius
     cities = instance.cities
-    
-    all_towers = [[([False for _ in range(N)], Point(j, k)) for j in range(D)] for k in range(D)]
- 
-    #need to fill in true/false array
-    for x in range (D):
-        for y in range (D):
-            #x,yth true/false array
+
+    all_towers = [[([False for _ in range(N)], Point(j, k))
+                   for j in range(D)] for k in range(D)]
+
+    # need to fill in true/false array
+    for x in range(D):
+        for y in range(D):
+            # x,yth true/false array
             tower_coordinate = all_towers[x][y][1]
             for c in range(len(cities)):
-                all_towers[x][y][0][c] = Point.distance_sq(tower_coordinate, cities[c]) <= R_s ** 2
-    
+                all_towers[x][y][0][c] = Point.distance_sq(
+                    tower_coordinate, cities[c]) <= R_s ** 2
+
     '''
     testing to see if all cities are covered by at least 1 possible tower
     for i in range(N):
@@ -209,42 +212,42 @@ def algo_ver2(instance: Instance) -> Solution:
                 sum += all_towers[x][y][0][i]
         print(sum > 0)
     '''
-    
-    #find max cities covered
+
+    # find max cities covered
     max_covered = 0
     for x in range(D):
         for y in range(D):
             max_covered = max(max_covered, sum(all_towers[x][y][0]))
     max_covered = int(max_covered / 3) * 2
-    #towers where number of cities it covers is equal to the max number of cities covered
+    # towers where number of cities it covers is equal to the max number of cities covered
     possible_start_tower = []
     for x in range(D):
         for y in range(D):
             if sum(all_towers[x][y][0]) >= max_covered:
                 possible_start_tower.append(all_towers[x][y])
 
-    #updates the check_cover array
+    # updates the check_cover array
     def update_check_cover(check_cover, added_tower):
         for i in range(N):
             check_cover[i] = check_cover[i] or added_tower[0][i]
         return check_cover
-        
-    #returns true if all cities are covered 
+
+    # returns true if all cities are covered
     def checker(check_cover):
         return all(check_cover)
-    
+
     possible_answer = []
 
     for start in possible_start_tower:
-        #removing current start tower from pool of possible towers
-        #variable that tells if the i_th cities has been covered
+        # removing current start tower from pool of possible towers
+        # variable that tells if the i_th cities has been covered
         check_cover = [False for _ in range(N)]
-        #i_th answer 
+        # i_th answer
         temp_answer = []
         temp_answer.append(start)
-        
+
         check_cover = update_check_cover(check_cover, start)
-        #greedy
+        # greedy
         # print("In Greedy")
         most_recent_placed_tower = start
         while not checker(check_cover):
@@ -271,23 +274,22 @@ def algo_ver2(instance: Instance) -> Solution:
                             tower_with_most_xor = all_towers[x][y]
                             #print("after most xor")
 
-            
             temp_answer.append(tower_with_most_xor)
             check_cover = update_check_cover(check_cover, tower_with_most_xor)
 
             #most_recent_placed_tower = tower_with_most_xor
         # print(all(check_cover))
         possible_answer.append(temp_answer)
-    
+
     possible_answer_as_solution_type = []
     solution_string_arr = 0
     for ans_arr in possible_answer:
         arr = []
         arr.append(str(len(ans_arr)))
         for tower_tuple in ans_arr:
-            arr.append(str(tower_tuple[1].x) + " " + str(tower_tuple[1].y)) 
+            arr.append(str(tower_tuple[1].x) + " " + str(tower_tuple[1].y))
         possible_answer_as_solution_type.append(Solution.parse(arr, instance))
-    
+
     min_penalty = float('inf')
     absolute_solution = 0
     for sol in possible_answer_as_solution_type:
@@ -296,9 +298,6 @@ def algo_ver2(instance: Instance) -> Solution:
         if min_penalty < temp_min_penalty:
             absolute_solution = sol
     return absolute_solution
-
-        
-
 
 
 SOLVERS: Dict[str, Callable[[Instance], Solution]] = {
