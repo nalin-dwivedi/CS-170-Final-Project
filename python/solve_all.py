@@ -15,13 +15,11 @@ from pathlib import Path
 from threading import BoundedSemaphore
 
 from instance import Instance
-from solve import algo_ver3
 from solution import Solution
 
 # Modify this line to import your own solvers.
 # YOUR CODE HERE
-#from solve import solve_naive
-# from solve import algo_ver1
+from solve import solve_naive
 
 
 class Size(enum.Enum):
@@ -33,18 +31,12 @@ class Size(enum.Enum):
 def solver(size: Size, instance: Instance) -> Solution:
     # Modify this function to use your imported solvers.
     # YOUR CODE HERE
-    # if size == Size.SMALL:
-    #     return solve_naive(instance)
-    # elif size == Size.MEDIUM:
-    #     return solve_naive(instance)
-    # elif size == Size.LARGE:
-    #     return solve_naive(instance)
     if size == Size.SMALL:
-        return algo_ver3(instance)
+        return solve_naive(instance)
     elif size == Size.MEDIUM:
-        return algo_ver3(instance)
+        return solve_naive(instance)
     elif size == Size.LARGE:
-        return algo_ver3(instance)
+        return solve_naive(instance)
 
 
 # You shouldn't need to modify anything below this line.
@@ -75,6 +67,25 @@ def solve_one(size, inf, outf):
     with outf.open('w') as f:
         solution.serialize(f)
     print(f"{str(inf)}: solution found with penalty", solution.penalty())
+
+
+def solve_one(args):
+    size, inf, outf = args
+    try:
+        with open(inf) as f:
+            instance = Instance.parse(f.readlines())
+        assert instance.valid()
+
+        solution = solver(Size(size), instance)
+        assert solution.valid()
+
+        with outf.open('w') as f:
+            solution.serialize(f)
+
+    except Exception as e:
+        print(f"{size} job failed ({inf}):", e)
+    else:
+        print(f"{str(inf)}: solution found with penalty", solution.penalty())
 
 
 def main(args):
@@ -110,6 +121,8 @@ def main(args):
             pool.apply_async(solve_one, (size, inf, outf),
                              callback=callback,
                              error_callback=make_error_callback(size, inf))
+    with multiprocessing.Pool(args.parallelism) as pool:
+        pool.map(solve_one, traverse_files(args.inputs, args.outputs))
 
 
 if __name__ == "__main__":

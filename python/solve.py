@@ -6,13 +6,10 @@ For usage, run `python3 solve.py --help`.
 """
 
 import argparse
-import math
 from pathlib import Path
-from re import S
 from typing import Callable, Dict
 
 from instance import Instance
-from point import Point  # Added this in imports
 from solution import Solution
 from file_wrappers import StdinFileWrapper, StdoutFileWrapper
 
