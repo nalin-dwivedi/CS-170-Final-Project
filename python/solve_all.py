@@ -23,6 +23,7 @@ from solution import Solution
 #from solve import solve_naive
 # from solve import algo_ver1
 
+
 class Size(enum.Enum):
     SMALL = "small"
     MEDIUM = "medium"
@@ -40,10 +41,10 @@ def solver(size: Size, instance: Instance) -> Solution:
         return solve_naive(instance)'''
     if size == Size.SMALL:
         return algo_ver2(instance)
-    elif size == Size.MEDIUM:
-        return algo_ver2(instance)
-    elif size == Size.LARGE:
-        return algo_ver2(instance)
+    # elif size == Size.MEDIUM:
+    #     return algo_ver2(instance)
+    # elif size == Size.LARGE:
+    #     return algo_ver2(instance)
 
 
 # You shouldn't need to modify anything below this line.
