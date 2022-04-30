@@ -215,12 +215,12 @@ def algo_ver2(instance: Instance) -> Solution:
     for x in range(D):
         for y in range(D):
             max_covered = max(max_covered, sum(all_towers[x][y][0]))
-    max_covered = int(max_covered / 3) * 2
+    max_covered = max_covered
     #towers where number of cities it covers is equal to the max number of cities covered
     possible_start_tower = []
     for x in range(D):
         for y in range(D):
-            if sum(all_towers[x][y][0]) >= max_covered:
+            if sum(all_towers[x][y][0]) == max_covered:
                 possible_start_tower.append(all_towers[x][y])
 
     #updates the check_cover array
@@ -274,7 +274,9 @@ def algo_ver2(instance: Instance) -> Solution:
             
             temp_answer.append(tower_with_most_xor)
             check_cover = update_check_cover(check_cover, tower_with_most_xor)
-
+            if len(temp_answer) == N:
+                temp_answer = [(0, cities[t]) for t in range(N)]
+                break
             #most_recent_placed_tower = tower_with_most_xor
         # print(all(check_cover))
         possible_answer.append(temp_answer)
