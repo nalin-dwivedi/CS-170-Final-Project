@@ -13,15 +13,14 @@ import multiprocessing
 import os
 from pathlib import Path
 from threading import BoundedSemaphore
-
-from instance import Instance
 from solve import algo_ver2
+from instance import Instance
 from solution import Solution
 
 # Modify this line to import your own solvers.
 # YOUR CODE HERE
-#from solve import solve_naive
-# from solve import algo_ver1
+from solve import algo_ver3
+
 
 class Size(enum.Enum):
     SMALL = "small"
@@ -63,17 +62,36 @@ def traverse_files(inroot: str, outroot):
             yield (size, Path(inroot) / size / inf, Path(outroot) / size / outf)
 
 
-def solve_one(size, inf, outf):
-    with open(inf) as f:
-        instance = Instance.parse(f.readlines())
-    assert instance.valid()
+# def solve_one(size, inf, outf):
+#     with open(inf) as f:
+#         instance = Instance.parse(f.readlines())
+#     assert instance.valid()
 
-    solution = solver(Size(size), instance)
-    assert solution.valid()
+#     solution = solver(Size(size), instance)
+#     assert solution.valid()
 
-    with outf.open('w') as f:
-        solution.serialize(f)
-    print(f"{str(inf)}: solution found with penalty", solution.penalty())
+#     with outf.open('w') as f:
+#         solution.serialize(f)
+#     print(f"{str(inf)}: solution found with penalty", solution.penalty())
+
+
+def solve_one(args):
+    size, inf, outf = args
+    try:
+        with open(inf) as f:
+            instance = Instance.parse(f.readlines())
+        assert instance.valid()
+
+        solution = solver(Size(size), instance)
+        assert solution.valid()
+
+        with outf.open('w') as f:
+            solution.serialize(f)
+
+    except Exception as e:
+        print(f"{size} job failed ({inf}):", e)
+    else:
+        print(f"{str(inf)}: solution found with penalty", solution.penalty())
 
 
 def main(args):
@@ -102,13 +120,15 @@ def main(args):
             sema.release()
         return error_callback
 
+    # with multiprocessing.Pool(args.parallelism) as pool:
+    #     for size, inf, outf in traverse_files(args.inputs, args.outputs):
+    #         sema.acquire()
+    #         print(f"{str(inf)}: spawning job")
+    #         pool.apply_async(solve_one, (size, inf, outf),
+    #                          callback=callback,
+    #                          error_callback=make_error_callback(size, inf))
     with multiprocessing.Pool(args.parallelism) as pool:
-        for size, inf, outf in traverse_files(args.inputs, args.outputs):
-            sema.acquire()
-            print(f"{str(inf)}: spawning job")
-            pool.apply_async(solve_one, (size, inf, outf),
-                             callback=callback,
-                             error_callback=make_error_callback(size, inf))
+        pool.map(solve_one, traverse_files(args.inputs, args.outputs))
 
 
 if __name__ == "__main__":
