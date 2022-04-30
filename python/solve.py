@@ -8,6 +8,7 @@ For usage, run `python3 solve.py --help`.
 import argparse
 import math
 from pathlib import Path
+from re import S
 from typing import Callable, Dict
 
 from instance import Instance
@@ -189,6 +190,7 @@ def algo_ver2(instance: Instance) -> Solution:
     cities = instance.cities
     
     all_towers = [[([False for _ in range(N)], Point(j, k)) for j in range(D)] for k in range(D)]
+ 
     #need to fill in true/false array
     for x in range (D):
         for y in range (D):
@@ -243,22 +245,57 @@ def algo_ver2(instance: Instance) -> Solution:
         
         check_cover = update_check_cover(check_cover, start)
         #greedy
+        # print("In Greedy")
         most_recent_placed_tower = start
         while not checker(check_cover):
+            # can add distance heuristic later if needed for optimization
+            # finding first tower with most xor
             most_xor = 0
+            # holds tower tuple
+            tower_with_most_xor = all_towers[0][0]
             for x in range(D):
                 for y in range(D):
                     if all_towers[x][y] not in temp_answer:
+                        temp_most_xor = most_xor
+                        count = 0
+                        for c in range(N):
+                            #print("Before count add")
+                            count += check_cover[c] ^ all_towers[x][y][0][c]
+                            #print("After count add")
+                        most_xor = max(most_xor, count)
+                        # print("most_xor: ",most_xor)
+                        # print("temp: ",temp_most_xor)
+                        #print(temp_most_xor > most_xor)
+                        if temp_most_xor < most_xor:
+                            #print("before replace most xor")
+                            tower_with_most_xor = all_towers[x][y]
+                            #print("after most xor")
 
+            
+            temp_answer.append(tower_with_most_xor)
+            check_cover = update_check_cover(check_cover, tower_with_most_xor)
 
-
-            most_recent_placed_tower = #something
-
+            #most_recent_placed_tower = tower_with_most_xor
+        # print(all(check_cover))
         possible_answer.append(temp_answer)
-
-        
-
-        
+    
+    possible_answer_as_solution_type = []
+    solution_string_arr = 0
+    for ans_arr in possible_answer:
+        arr = []
+        arr.append(str(len(ans_arr)))
+        for tower_tuple in ans_arr:
+            arr.append(str(tower_tuple[1].x) + " " + str(tower_tuple[1].y)) 
+        possible_answer_as_solution_type.append(Solution.parse(arr, instance))
+    
+    min_penalty = float('inf')
+    absolute_solution = 0
+    for sol in possible_answer_as_solution_type:
+        temp_min_penalty = min_penalty
+        min_penalty = min(min_penalty, sol.penalty())
+        if min_penalty < temp_min_penalty:
+            absolute_solution = sol
+    return absolute_solution
 
         
 
