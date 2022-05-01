@@ -274,7 +274,7 @@ def algo_ver2(instance: Instance) -> Solution:
 
             temp_answer.append(tower_with_most_xor)
             if len(temp_answer) == N:
-                temp_ans = [(0, cities[t]) for t in range(N)]
+                temp_answer = [(0, cities[t]) for t in range(N)]
                 break
             check_cover = update_check_cover(check_cover, tower_with_most_xor)
 

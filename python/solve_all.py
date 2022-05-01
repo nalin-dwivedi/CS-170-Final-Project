@@ -37,12 +37,12 @@ def solver(size: Size, instance: Instance) -> Solution:
         return solve_naive(instance)
     elif size == Size.LARGE:
         return solve_naive(instance)'''
-    # if size == Size.SMALL:
-    #     return algo_ver2(instance)
-    if size == Size.MEDIUM:
+    if size == Size.SMALL:
         return algo_ver2(instance)
-    # if size == Size.LARGE:
-    #     return algo_ver2(instance)
+    elif size == Size.MEDIUM:
+        return algo_ver2(instance)
+    elif size == Size.LARGE:
+        return algo_ver2(instance)
 
 
 # You shouldn't need to modify anything below this line.
