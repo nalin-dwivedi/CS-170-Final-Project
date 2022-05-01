@@ -14,7 +14,7 @@ from solution import Solution
 from file_wrappers import StdinFileWrapper, StdoutFileWrapper
 from point import Point
 
-
+#test Shawn Lim contributor
 def solve_naive(instance: Instance) -> Solution:
     return Solution(
         instance=instance,
