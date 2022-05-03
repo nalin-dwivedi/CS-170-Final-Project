@@ -14,7 +14,9 @@ from solution import Solution
 from file_wrappers import StdinFileWrapper, StdoutFileWrapper
 from point import Point
 
-#test Shawn Lim contributor
+# test Shawn Lim contributor
+
+
 def solve_naive(instance: Instance) -> Solution:
     return Solution(
         instance=instance,
@@ -299,6 +301,7 @@ def algo_ver2(instance: Instance) -> Solution:
         if min_penalty < temp_min_penalty:
             absolute_solution = sol
     return absolute_solution
+
 
 # potential towers are at every city location instead of all D^2 points
 def algo_ver3(instance: Instance) -> Solution:
