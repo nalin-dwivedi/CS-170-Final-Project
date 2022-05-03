@@ -1,69 +1,20 @@
-# Spring 2022 CS170 Project Skeleton
+# Spring 2022 CS170 Project (Team 2: pay2win)
+
+## Spec
+https://cs170.org/assets/pdf/project_spec.pdf
 
 ## Requirements
 
-A Python skeleton is available in the `python` subdirectory. The Python
-skeleton was developed using Python 3.9, but it should work with Python
-versions 3.6+.
+The project was developed using Python 3.9, but it should work with Python versions 3.6+.
 
-## Usage
+## How to View Outputs
 
-### Generating instances
+Clone the repository onto your local computer and begin by deleting the `outputs/` subdirectory. **Note: you will have to delete the** `outputs/` **subdirectory every time you want to rerun our algorithm against the inputs in the** `inputs/` **subdirectory.** Below you will find procedures to produce our highest performing output files for small, medium and large inputs respectively.
 
-To generate instances, read through [`python/instance.py`](python/instance.py),
-which contains a dataclass (struct) that holds the data for an instance, as
-well as other relevant methods. Then modify the
-[`python/generate.py`](python/generate.py) file by filling in the
-`make_{small,medium,large}_instance` functions.
+### For Small and Medium Inputs
 
-After you have filled in those functions, you can run `make generate` in the
-`python` directory to generate instances into the input directory.
+Navigate to the `python/solve_all.py` file and first uncomment the if-elif block from lines 38-41 in `def solver(size: Size, instance: Instance) -> Solution` that correspond to the if-elif statements `if size == Size.SMALL` and `elif size == Size.MEDIUM`. Make sure that all other lines in the `solver` function are commented out. Then change the return statements for both if statements on lines 39 and 41 to `return algo_ver2(instance)`. After making sure the `outputs/` subdirectory is deleted, open a terminal window and run `python3 python/solve_all.py inputs outputs` in the repo directory which will create `outputs/small/` and `outputs/medium/` folders filled with `.out` files corresponding to the `.in` files in the `inputs/small` and `inputs/medium` subdirectories. Please store these output files somewhere safe to view them later as on every rerun, the `outputs/` subdirectory will be overriden. Note the `outputs/large/` folder will be empty because we have not ran the large inputs using the `algo_ver2` algorithm. These outputs will be produced with the procedure below.
 
-To run unit tests, run `make check`.
+### For Large Inputs
 
-## Solving
-
-We've created a solver skeleton at [`python/solve.py`](python/solve.py).
-```bash
-python3 solve.py case.in --solver=naive case.out
-```
-
-We've also created a skeleton that runs your solver on all cases and puts them
-in the output directory. To use it, modify
-[`python/solve_all.py`](python/solve_all.py) to use your solver function(s).
-Then run
-
-```
-python3 python/solve_all.py inputs outputs
-```
-
-in the root directory.
-
-
-## Merging
-
-To merge multiple output folders, taking the best solutions, see
-[`python/merge.py`](python/merge.py).
-
-
-## Visualizing Instances
-
-To visualize problem instances, run `python3 visualize.py`, passing  in the
-path to your `.in` file as the first argument (or `-` to read from standard
-input). To visualize a solution as well, pass in a `.out` file to the option
-`--with-solution`.
-
-By default, the output visualization will be written as a SVG file to standard
-output. To redirect it to a file, use your shell's output redirection or pass
-in an output file as an additional argument.
-
-For example, you could run
-```bash
-python3 visualize.py my_input.in out.svg
-```
-to create an `out.svg` file visualizing the `my_input.in` problem instance.
-
-To visualize a solution file for this instance as well, you could run
-```bash
-python3 visualize.py my_input.in --with-solution my_soln.out out.svg
-```
+Navigate to the `python/solve_all.py` file and first uncomment the if block from lines 42-43 in `def solver(size: Size, instance: Instance) -> Solution` that correspond to the if statement `if size == Size.LARGE`. Make sure that all other lines in the `solver` function are commented out. Then change the return statement for the if statement on line 43 to `return algo_ver3(instance)`. After making sure the `outputs/` subdirectory is deleted, open a terminal window and run `python3 python/solve_all.py inputs outputs` in the repo directory which will create an `outputs/large/` folder filled with `.out` files corresponding to the `.in` files in the `inputs/large/` subdirectory. Note the `outputs/small/` and `outputs/medium/` folders within the `outputs/` folder will be empty because we have not ran the small and medium inputs using the `algo_ver3` algorithm. These outputs will be produced with the procedure above.
